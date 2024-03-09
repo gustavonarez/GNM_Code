@@ -1,0 +1,430 @@
+Sub Update()
+
+'Code to format, and add formulas to the Inventory Program file
+ 
+'Clear all data 
+ 
+Sheets("Planning Review").Select 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+Range("A3:DD" & k).Clear 
+ 
+Range("A3").Select 
+ 
+'Get information from Item_Supply_and_Demand 
+ 
+Workbooks.Open Filename:="R:\GNM\Inventory Program Access\tbl_Inventory_Program.xlsx" 
+ 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+Range("A2:DB" & k).Copy 
+ 
+Dim wbIVA As Workbook 
+Dim w As Window 
+ 
+For Each w In Windows 
+    If w.Caption Like "Inventory Program*" Then 
+        w.Activate 
+        Set wbIVA = ActiveWorkbook 
+        Application.Visible = True 
+        Exit For 
+    End If 
+Next w 
+ 
+ActiveSheet.Paste 
+ 
+'Projected available balance formulas 
+ 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+ 
+    Range("CH3").Select 
+    ActiveCell.FormulaR1C1 = _ 
+        "=+RC[4]-(MAX((RC[-15]*((EOMONTH(TODAY(),0)-TODAY())/30)),RC[-8]))+RC[-4]" 
+    Range("CI3").Select 
+    ActiveCell.FormulaR1C1 = "=+RC[-1]-MAX(RC[-16],RC[-8])+RC[-4]" 
+    Range("CJ3").Select 
+    ActiveCell.FormulaR1C1 = "=+RC[-1]-MAX(RC[-17],RC[-8])+RC[-4]" 
+    Range("CK3").Select 
+    ActiveCell.FormulaR1C1 = "=+RC[-1]-MAX(RC[-18],RC[-8])+RC[-4]" 
+     
+    Range("CH3:CK3").AutoFill Range("CH3:CK" & k) 
+     
+    Range("CH3:CK" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+ 
+ 
+'TEXT TO NUMBER 
+ 
+    Range("T3:U" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+      Range("V3:V" & k).Select 
+    Selection.Style = "Currency" 
+     
+     Range("W3:X" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+       Range("Y3:Y" & k).Select 
+    Selection.Style = "Currency" 
+     
+         Range("Z3:AB" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+            Range("AC3:AC" & k).Select 
+    Selection.Style = "Percent" 
+     
+            Range("AG3:AG" & k).Select 
+    Selection.NumberFormat = "m/d/yyyy" 
+     
+            Range("AH3:AH" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+    Range("AI3:AI" & k).Select 
+    Selection.Style = "Currency" 
+     
+                Range("AL3:AL" & k).Select 
+    Selection.Style = "Percent" 
+     
+                Range("AM3:AW" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+        Range("BE3:BE" & k).Select 
+    Selection.Style = "Currency" 
+     
+        Range("BK3:BN" & k).Select 
+    Selection.NumberFormat = "m/d/yyyy" 
+ 
+        Range("BO3:BP" & k).Select 
+    Selection.NumberFormat = "m/d/yyyy" 
+   
+    Range("BQ3:BS" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+            Range("BT3:BT" & k).Select 
+    Selection.Style = "Currency" 
+     
+        Range("BU3:CL" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+    Range("CM3:CM" & k).Select 
+    Selection.Style = "Currency" 
+     
+    Range("CN3:CN" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+        Range("CO3:CO" & k).Select 
+    Selection.Style = "Currency" 
+     
+      Range("CP3:CP" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+        Range("CQ3:CR" & k).Select 
+    Selection.Style = "Currency" 
+     
+      Range("CS3:CU" & k).Select 
+    Selection.NumberFormat = "_(* #,##0_);_(* (#,##0);_(* ""-""??_);_(@_)" 
+     
+        Range("CV3:CW" & k).Select 
+    Selection.Style = "Currency" 
+     
+     
+     
+        Range("c3:c" & k).Select 
+        Selection.TextToColumns Destination:=Range("C3"), DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+ 
+     
+        Range("bn3:bn" & k).Select 
+        Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=Range("BN3"), DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 3), TrailingMinusNumbers:=True 
+     
+    ' 
+     
+     
+    Range("bo3:bo" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                        Range("bp3:bp" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                Range("bq3:bq" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                        Range("br3:br" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                        Range("bu3:bu" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                        Range("bv3:bv" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                        Range("bx3:bx" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                        Range("bx3:bx" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                        Range("by3:by" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                Range("bz3:bz" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                        Range("ca3:ca" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                        Range("cb3:cb" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                Range("cc3:cc" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                Range("cd3:cd" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                Range("ce3:ce" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                        Range("cf3:cf" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+  Range("cg3:cg" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+          Range("ch3:ch" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+          Range("ci3:ci" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                  Range("cj3:cj" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                          Range("ck3:ck" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                          Range("cl3:cl" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                          Range("cm3:cm" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                          Range("cn3:cn" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                          Range("co3:co" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                        Range("cp3:cp" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                                Range("cq3:cq" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+         
+                                                                Range("cr3:cr" & k).Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.TextToColumns Destination:=ActiveCell, DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+ 
+         
+'FORMULAS SUGGESTED PARAMETERS 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+ 
+Range("CT1:CX1").Select 
+Selection.Copy 
+Range("CT3").Select 
+Selection.PasteSpecial Paste:=xlPasteFormulas, Operation:=xlNone, _ 
+        SkipBlanks:=False, Transpose:=False 
+Range("CT3:CX3").AutoFill Range("CT3:CX" & k) 
+     
+    Range("CT3:CX" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+ 
+Range("DC1:DD1").Select 
+Selection.Copy 
+Range("DC3").Select 
+Selection.PasteSpecial Paste:=xlPasteFormulas, Operation:=xlNone, _ 
+        SkipBlanks:=False, Transpose:=False 
+Range("DC3:DD3").AutoFill Range("DC3:DD" & k) 
+     
+    Range("DC3:DD" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+ 
+' GET COMMENTS 
+ 
+    Workbooks.Open Filename:="R:\GNM\Inventory Program Access\tbl_Item_Comments.xlsx" 
+    ActiveWindow.WindowState = xlMinimized 
+ 
+    Range("CZ3").Select 
+    'ActiveCell.FormulaR1C1 = "=IFERROR(VLOOKUP(RC1,Comments!C1:C6,4,0),"""")" 
+    ActiveCell.FormulaR1C1 = _ 
+        "=IFERROR(VLOOKUP(RC1,'R:\GNM\Inventory Program Access\[tbl_Item_Comments.xlsx]Sheet1'!C1:C5,4,0),"""")" 
+     
+    Range("DA3").Select 
+    'ActiveCell.FormulaR1C1 = "=IFERROR(VLOOKUP(RC1,Comments!C1:C6,6,0),"""")" 
+    ActiveCell.FormulaR1C1 = _ 
+        "=IFERROR(VLOOKUP(RC1,'R:\GNM\Inventory Program Access\[tbl_Item_Comments.xlsx]Sheet1'!C1:C5,5,0),"""")" 
+ 
+    Range("CZ3:DA3").AutoFill Range("CZ3:DA" & k) 
+     
+    Range("CZ3:DA" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Range("DA3:DA" & k).Select 
+    Selection.NumberFormat = "m/d/yyyy" 
+        Range("CP2").Select 
+         
+'Sort OH & Quantity 
+   
+    ActiveWorkbook.Worksheets("Planning Review").AutoFilter.Sort.SortFields.Clear 
+    ActiveWorkbook.Worksheets("Planning Review").AutoFilter.Sort.SortFields.Add2 _ 
+        Key:=Range("CQ2:CQ135655"), SortOn:=xlSortOnValues, Order:=xlDescending, _ 
+        DataOption:=xlSortNormal 
+    With ActiveWorkbook.Worksheets("Planning Review").AutoFilter.Sort 
+        .Header = xlYes 
+        .MatchCase = False 
+        .Orientation = xlTopToBottom 
+        .SortMethod = xlPinYin 
+        .Apply 
+    End With 
+   
+'Enter report date 
+ 
+    Sheets("Product Profile").Select 
+    Range("N1").Select 
+    ActiveCell.FormulaR1C1 = "=TODAY()" 
+    Range("N1").Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+    Range("B3").Select 
+ 
+     Sheets("Planning Review").Select 
+       Range("CQ2").Select 
+ 
+End Sub 
