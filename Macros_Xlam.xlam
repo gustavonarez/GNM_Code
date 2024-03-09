@@ -1,0 +1,315 @@
+'Modules stored in a .xlam file to be acced when opening any Excel file, but not accesible in other workbooks. For some reports I didn't
+'want to include the macros I used for those. This made the files bigger and created a macro alert to the end users.
+[need to add instructions to how and where to create the .xlam file]
+
+Sub UpdateOHandAndSupplyDemand() 
+ 
+'Item supply-Demand, update pivot table and create text values table 
+         
+    Workbooks.Open Filename:="R:\GNM\Inventory Program Access\Item_Supply_and_Demand.xlsx" 
+    'ActiveWindow.WindowState = xlMinimized 
+    Sheets("PT").Select 
+        'Update PT 
+    Dim pt As PivotTable 
+    For Each pt In ActiveSheet.PivotTables 
+        pt.RefreshTable 
+    Next pt 
+    'Delete contents in text values table 
+    k = Cells(Rows.Count, "G").End(xlUp).Row 
+    Range("G1:K" & k).Select 
+    Selection.Clear 
+    'Paste PT to text values table 
+    k = Cells(Rows.Count, "A").End(xlUp).Row 
+    Range("A1:E" & k).Select 
+    Selection.Copy 
+    Range("G1").Select 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+    :=False, Transpose:=False 
+     
+    Range("G1:G" & k).Select 
+        Selection.TextToColumns Destination:=Range("G1"), DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+ 
+'GetLatestInvProgramPath 
+ 
+    Dim fso As Object 
+    Dim folder As Object 
+    Dim file As Object 
+     
+    Dim newestDate As Date 
+    Dim newestFile As String 
+     
+    Set fso = CreateObject("Scripting.FileSystemObject") 
+    Set folder = fso.GetFolder("\\file1\\purchasing\\Inventory\\Program") 
+     
+    For Each file In folder.Files 
+        If file.DateLastModified > newestDate And Left(file.Name, 3) = "Inv" Then 
+            newestDate = file.DateLastModified 
+            newestFile = file.Name 
+        End If 
+    Next file 
+     
+    newestFile = newestFile 
+    'Range("M1").Value = newestFile 
+     
+    Dim message As String 
+    message = newestFile 
+    MsgBox message, vbOKOnly, "Message Box Title" 
+     
+'Add Vlookups to Alpha Inventory file, copy and paste values 
+ 
+    Dim w As Window 
+ 
+    For Each w In Windows 
+    If w.Caption Like "Alpha Inventory*" Then 
+        w.Activate 
+        Set wbIVA = ActiveWorkbook 
+        Application.Visible = True 
+        Exit For 
+        End If 
+    Next w 
+ 
+    k = Cells(Rows.Count, "A").End(xlUp).Row 
+     
+    Range("C2").Value = "=VLOOKUP(A2,'[" & newestFile & "]Planning Review'!$C$2:$DD$150000,88,0)" 
+    Range("C2").AutoFill Range("C2:C" & k) 
+    Range("C2:C" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Range("D2").Value = "=VLOOKUP(A2,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$5000,2,0)" 
+    Range("D2").AutoFill Range("D2:D" & k) 
+    Range("D2:D" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+     
+    Range("F2").Value = "=VLOOKUP(A2,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$3000,3,0)" 
+    Range("F2").AutoFill Range("F2:F" & k) 
+    Range("F2:F" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+       
+ 'Add Vlookups to ATP print engines file, copy and paste values 
+  
+    ' Dim w As Window 
+ 
+    For Each w In Windows 
+    If w.Caption Like "ATP print engines*" Then 
+        w.Activate 
+        Set wbIVA = ActiveWorkbook 
+        Application.Visible = True 
+        Exit For 
+        End If 
+    Next w 
+  
+    k = Cells(Rows.Count, "A").End(xlUp).Row 
+     
+    Range("E3").Value = "=VLOOKUP(A3,'[" & newestFile & "]Planning Review'!$C$2:$DD$150000,92,0)" 
+    Range("E3").AutoFill Range("E3:E" & k) 
+    Range("E3:E" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Range("F3").Value = "=VLOOKUP(A3,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$5000,2,0)" 
+    Range("F3").AutoFill Range("F3:F" & k) 
+    Range("F3:F" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+     
+    Range("G3").Value = "=VLOOKUP(A2,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$3000,3,0)" 
+    Range("G3").AutoFill Range("G3:G" & k) 
+    Range("G3:G" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+  
+  'Add Vlookups to ATP stands file, copy and paste values 
+   
+       'Dim w As Window 
+ 
+    For Each w In Windows 
+    If w.Caption Like "ATP stands*" Then 
+        w.Activate 
+        Set wbIVA = ActiveWorkbook 
+        Application.Visible = True 
+        Exit For 
+        End If 
+    Next w 
+  
+    Range("D5").Value = "=VLOOKUP(B5,'[" & newestFile & "]Planning Review'!$C$2:$DD$150000,92,0)" 
+    Range("D5").AutoFill Range("D5:D35") 
+    Range("D5:D35").Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Range("E5").Value = "=VLOOKUP(B5,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$5000,3,0)" 
+    Range("E5").AutoFill Range("E5:E35") 
+    Range("E5:E35").Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+     
+    Range("F5").Value = "=VLOOKUP(B5,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$3000,2,0)" 
+    Range("F5").AutoFill Range("F5:F35") 
+    Range("F5:F35").Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+ End Sub 
+  
+ Sub New_Stock_Labels_Update() 
+  
+ 'Item supply-Demand, update pivot table and create text values table 
+         
+    Workbooks.Open Filename:="R:\GNM\Inventory Program Access\Item_Supply_and_Demand.xlsx" 
+    'ActiveWindow.WindowState = xlMinimized 
+    Sheets("PT").Select 
+        'Update PT 
+    Dim pt As PivotTable 
+    For Each pt In ActiveSheet.PivotTables 
+        pt.RefreshTable 
+    Next pt 
+    'Delete contents in text values table 
+    k = Cells(Rows.Count, "G").End(xlUp).Row 
+    Range("G1:K" & k).Select 
+    Selection.Clear 
+    'Paste PT to text values table 
+    k = Cells(Rows.Count, "A").End(xlUp).Row 
+    Range("A1:E" & k).Select 
+    Selection.Copy 
+    Range("G1").Select 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+    :=False, Transpose:=False 
+     
+    Range("G1:G" & k).Select 
+        Selection.TextToColumns Destination:=Range("G1"), DataType:=xlDelimited, _ 
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _ 
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _ 
+        :=Array(1, 1), TrailingMinusNumbers:=True 
+ 
+'GetLatestInvProgramPath 
+ 
+    Dim fso As Object 
+    Dim folder As Object 
+    Dim file As Object 
+     
+    Dim newestDate As Date 
+    Dim newestFile As String 
+     
+    Set fso = CreateObject("Scripting.FileSystemObject") 
+    Set folder = fso.GetFolder("\\file1\\purchasing\\Inventory\\Program") 
+     
+    For Each file In folder.Files 
+        If file.DateLastModified > newestDate And Left(file.Name, 3) = "Inv" Then 
+            newestDate = file.DateLastModified 
+            newestFile = file.Name 
+        End If 
+    Next file 
+     
+    newestFile = newestFile 
+    'Range("M1").Value = newestFile 
+     
+    Dim message As String 
+    message = newestFile 
+    MsgBox message, vbOKOnly, "Message Box Title" 
+ 
+ 'Add Vlookups to New material stock labels transition file, copy and paste values 
+  
+    k = Cells(Rows.Count, "A").End(xlUp).Row 
+     
+    Range("D3").Value = "=VLOOKUP(A3,'[" & newestFile & "]Planning Review'!$C$2:$DD$150000,92,0)" 
+    Range("D3").AutoFill Range("D3:D" & k) 
+    Range("D3:D" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Range("E3").Value = "=VLOOKUP(A3,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$5000,2,0)" 
+    Range("E3").AutoFill Range("E3:E" & k) 
+    Range("E3:E" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+     
+    Range("F3").Value = "=VLOOKUP(A2,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$3000,3,0)" 
+    Range("F3").AutoFill Range("F3:F" & k) 
+    Range("F3:F" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+         
+    
+    Range("K3").Value = "=VLOOKUP(J3,'[" & newestFile & "]Planning Review'!$C$2:$DD$150000,92,0)" 
+    Range("K3").AutoFill Range("K3:K" & k) 
+    Range("K3:K" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+        Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+     
+    Range("L3").Value = "=VLOOKUP(J3,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$5000,2,0)" 
+    Range("L3").AutoFill Range("L3:L" & k) 
+    Range("L3:L" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+         
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+     
+    Range("M3").Value = "=VLOOKUP(J2,[Item_Supply_and_Demand.xlsx]PT!$G$1:$K$3000,3,0)" 
+    Range("M3").AutoFill Range("M3:M" & k) 
+    Range("M3:M" & k).Select 
+    Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+    Selection.Replace What:="#N/A", Replacement:="0", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False, FormulaVersion:=xlReplaceFormula2 
+          
+End Sub 
