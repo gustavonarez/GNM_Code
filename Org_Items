@@ -1,0 +1,174 @@
+Sub Update() 
+' Formatting, adding formulas, saving Excel workbook
+ 
+'Disabled as this is filtered out by new Discoverer report 
+    'Range("A1").Select 
+    'ActiveSheet.Range("$A$1:$BI$252443").AutoFilter Field:=1, Criteria1:="178" 
+    'ActiveSheet.Range("$A$1:$BI$252443").AutoFilter Field:=51, Criteria1:="=" 
+    'Range("A2", Range("BI2").End(xlDown)).SpecialCells(xlCellTypeVisible).ClearContents 
+ 
+'Clear values 
+ 
+k = Cells(Rows.Count, "B").End(xlUp).Row 
+Range("A2:BJ" & k).Clear 
+ 
+'Open WBR INV Item Inventory Value Analysis with filters 222, copy and paste to Org Items 
+ 
+Workbooks.Open Filename:="C:\Users\gustavon\Discoverer Workbooks\WBR INV Item Inventory Value Analysis with filters 222.csv" 
+ 
+Dim wbIVA As Workbook 
+Set wbIVA = Workbooks("WBR INV Item Inventory Value Analysis with filters 222.csv") 
+wbIVA.Activate 
+Application.Visible = True 
+ 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+Range("A6:BG" & k).Copy 
+ 
+Dim wbOIA As Workbook 
+Set wbOIA = Workbooks("Org_Item_Attributes.xlsm") 
+wbOIA.Activate 
+Application.Visible = True 
+ 
+Range("B2").Select 
+ActiveSheet.Paste 
+ 
+' Sort 
+        Cells.Select 
+    Selection.AutoFilter 
+    Selection.AutoFilter 
+    ActiveWorkbook.Worksheets("tbl_Org_Item_Attributes").AutoFilter.Sort.SortFields _ 
+        .Clear 
+    ActiveWorkbook.Worksheets("tbl_Org_Item_Attributes").AutoFilter.Sort.SortFields _ 
+        .Add Key:=Range("A1:A252443"), SortOn:=xlSortOnValues, Order:=xlAscending _ 
+        , DataOption:=xlSortNormal 
+    With ActiveWorkbook.Worksheets("tbl_Org_Item_Attributes").AutoFilter.Sort 
+        .Header = xlYes 
+        .MatchCase = False 
+        .Orientation = xlTopToBottom 
+        .SortMethod = xlPinYin 
+        .Apply 
+    End With 
+     
+k = Cells(Rows.Count, "B").End(xlUp).Row 
+ 
+'Formula Org-Item 
+    Range("A2").Select 
+    ActiveCell.FormulaR1C1 = "=+RC[1]&""-""&RC[3]" 
+     
+    Range("A2").Select 
+Selection.Copy 
+Range("A3:A" & k).Select 
+ActiveSheet.Paste 
+Range("A2:A" & k).Select 
+Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+'Formula order cost 
+    Range("AG2").Select 
+    ActiveCell.FormulaR1C1 = _ 
+        "=IF(ISNUMBER(SEARCH(""0COLOR"",RC[-28])),120,IF(ISNUMBER(SEARCH(""1COLOR"",RC[-28])),150,IF(ISNUMBER(SEARCH(""2COLOR"",RC[-28])),180,IF(ISNUMBER(SEARCH(""3COLOR"",RC[-28])),210,IF(LEFT(RC[-29],1)=""L"",240,IFERROR(VLOOKUP(RC[-29],Reference!R1C11:R2C12,2,0),35))))))" 
+ 
+Range("AG2").Select 
+Selection.Copy 
+Range("AG3:AG" & k).Select 
+ActiveSheet.Paste 
+Range("AG2:AG" & k).Select 
+Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+ 
+ 
+ 
+    Range("BI2").Select 
+    ' Previous Formula: ActiveCell.FormulaR1C1 = _ 
+        ' "=+VLOOKUP(RC[-60],Reference!C[-47]:C[-46],2,0)" 
+         
+        ActiveCell.FormulaR1C1 = _ 
+        "=IFERROR(IF(VLOOKUP(RC[-60],Reference!C14:C16,1,TRUE)=RC[-60],VLOOKUP(RC[-60],Reference!C14:C16,2,TRUE),NA()),"""")" 
+ 
+Range("BI2").Select 
+Selection.Copy 
+Range("BI2:BI" & k).Select 
+ActiveSheet.Paste 
+Range("BI2:BI" & k).Select 
+Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Selection.Replace What:="#N/A", Replacement:="Check", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False 
+    Application.CutCopyMode = False 
+     
+     
+Range("BJ2").Select 
+   'Previous Formula: ActiveCell.FormulaR1C1 = _ 
+        "=+VLOOKUP(RC[-61],Reference!C[-45]:C[-44],2,0)" 
+         
+    ActiveCell.FormulaR1C1 = _ 
+        "=IFERROR(IF(VLOOKUP(RC[-61],Reference!C17:C18,1,TRUE)=RC[-61],VLOOKUP(RC[-61],Reference!C17:C18,2,TRUE),NA()),"""")" 
+ 
+Range("BJ2").Select 
+Selection.Copy 
+Range("BJ3:BJ" & k).Select 
+ActiveSheet.Paste 
+Range("BJ2:BJ" & k).Select 
+Selection.Copy 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _ 
+        :=False, Transpose:=False 
+     
+    Selection.Replace What:="#N/A", Replacement:="", LookAt:=xlPart, _ 
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _ 
+        ReplaceFormat:=False 
+    Application.CutCopyMode = False 
+     
+'Delete Blank Rows 
+    Range("A2").Select 
+    Selection.End(xlDown).Select 
+    ActiveCell.Offset(1).Select 
+    ActiveCell.EntireRow.Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.Delete Shift:=xlUp 
+     
+'Update Item_Supply_and_Demand 
+ 
+Workbooks.Open Filename:="C:\Users\gustavon\Discoverer Workbooks\Item-Supply-Demand.xls" 
+ 
+Dim wbISD As Workbook 
+Set wbISD = Workbooks("Item_Supply_and_Demand.xlsx") 
+wbISD.Activate 
+Application.Visible = True 
+ 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+Range("A2:M" & k).Clear 
+ 
+Dim wbISD2 As Workbook 
+Set wbISD2 = Workbooks("Item-Supply-Demand.xls") 
+wbISD2.Activate 
+Application.Visible = True 
+ 
+k = Cells(Rows.Count, "A").End(xlUp).Row 
+Range("A4:M" & k).Copy 
+ 
+wbISD.Activate 
+Application.Visible = True 
+ 
+Range("A2").Select 
+ActiveSheet.Paste 
+Range("A2").Copy 
+ 
+'Delete Blank Rows 
+    Selection.End(xlDown).Select 
+    ActiveCell.Offset(1).Select 
+    ActiveCell.EntireRow.Select 
+    Range(Selection, Selection.End(xlDown)).Select 
+    Selection.Delete Shift:=xlUp 
+ 
+ 
+wbISD2.Close SaveChanges:=False 
+wbIVA.Close SaveChanges:=False 
+wbISD.Close SaveChanges:=True 
+wbOIA.Close SaveChanges:=True 
+ 
+End Sub 
